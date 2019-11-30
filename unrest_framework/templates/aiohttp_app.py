@@ -16,9 +16,11 @@ class Paginator:
 
 routes = web.RouteTableDef()
 
-{% for view in views.values() %}
-{{view.render()}}
-{ % endfor %}
+{% for view in views %}
+{% for name, html in view.render().items()%}
+{{html}}
+{% endfor %}
+{% endfor %}
 
 app = web.Application()
 app.add_routes(routes)

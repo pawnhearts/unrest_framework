@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.6"
 django_filters = "^0.2.1"
 djangorestframework = "^3.10"
+jinja2 = "^2.10"
 
 [tool.poetry.dev-dependencies]
 
