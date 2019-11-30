@@ -1,0 +1,23 @@
+[[package]]
+category = "main"
+description = "A filterset and filters."
+name = "django-filters"
+optional = false
+python-versions = "*"
+version = "0.2.1"
+
+[[package]]
+category = "main"
+description = "Web APIs for Django, made easy."
+name = "djangorestframework"
+optional = false
+python-versions = ">=3.5"
+version = "3.10.3"
+
+[metadata]
+content-hash = "cf814477e0662a19f670d04364a090a58c9c791a94dea791f1b98026e1840527"
+python-versions = "^3.6"
+
+[metadata.hashes]
+django-filters = ["1a9799a41106dc53ed894e952a24e8dee9b4fb37f010f22d178c09c90c61d711"]
+djangorestframework = ["5488aed8f8df5ec1d70f04b2114abc52ae6729748a176c453313834a9ee179c8", "dc81cbf9775c6898a580f6f1f387c4777d12bd87abf0f5406018d32ccae71090"]
