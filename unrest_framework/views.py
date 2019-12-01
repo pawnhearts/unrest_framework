@@ -191,7 +191,7 @@ class ViewAnalyzer(object):
         return {}
 
     def get_data(self):
-        return self.view_obj.get_serializer(self.queryset).data
+        return self.view_obj.get_serializer(self.queryset, many=True).data
 
     def get_methods(self):
         return [k for k in ('retrieve', 'list') if hasattr(self.view, k)]

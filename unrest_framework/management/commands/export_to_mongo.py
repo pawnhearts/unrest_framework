@@ -18,5 +18,6 @@ class Command(BaseCommand):
         for view in views.get_analized_views(args and args[0]):
             data = view.get_data()
             logging.info(f'Inserting {len(data)} objects into collection {view.view_name}')
-            db[view.view_name].insert_many()
+            if data:
+                db[view.view_name].insert_many(data)
 
