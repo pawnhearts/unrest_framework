@@ -15,7 +15,7 @@ class Command(BaseCommand):
         url, db = settings.MONGO_URL.rstrip('/').rsplit('/', 1)
         db = pymongo.MongoClient(url)[db]
 
-        for view in views.get_analyzed_views(args and args[0]):
+        for view in views.get_analized_views(args and args[0]):
             data = view.get_data()
             logging.info(f'Inserting {len(data)} objects into collection {view.view_name}')
             db[view.view_name].insert_many()

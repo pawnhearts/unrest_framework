@@ -64,19 +64,16 @@ def get_views(app_name=None):
     res = []
     from django.apps import apps
     for name in (apps.app_configs if not app_name else [app_name]):
-        print(name)
         app = apps.get_app_config(name)
         try:
             mod = import_module('.views', app.module.__package__)
-            print(mod)
-            res.extend([cls for n, cls in inspect.getmembers(mod) if inspect.isclass(cls)])
+            res.extend([cls for n, cls in inspect.getmembers(mod) if inspect.isclass(cls) and hasattr(cls, 'get_serializer')])
         except ImportError:
             continue
     return res
 
 
 def get_analized_views(app=None):
-    print(get_views(app))
     return list(filter(None, map(ViewAnalyzer.load, get_views(app))))
 
 
