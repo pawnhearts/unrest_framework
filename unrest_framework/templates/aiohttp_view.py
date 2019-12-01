@@ -10,6 +10,8 @@
 {% endif -%}
 @routes.get("{{path}}")
 async  def {{ view_name }}(request, args):
+    client = await aiomongo.create_client('{{MONGO_URL}}')
+    db = client.get_default_database()
     {% if type == 'retrieve' %}
     object = await db.{{collection}}.find_one({'{{params.lookup_field}}': args['{{params.lookup_field}}']})
     if not object:

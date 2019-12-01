@@ -80,7 +80,7 @@ def get_analized_views(app=None):
 def render_app(app=None):
     tpl = env.get_template('aiohttp_app.py')
     views = get_analized_views(app)
-    return tpl.render({'views': views})
+    return tpl.render({'views': views, 'MONGO_URL': settings.MONGO_URL})
 
 
 class ViewAnalyzer(object):
@@ -100,7 +100,7 @@ class ViewAnalyzer(object):
         if self.url and self.url.name:
             return self.url.name.lower().replace(' ', '_')
         else:
-            return ''.join('_' + l.lower() if l.isupper() else l for l in self.view.__name__).strip('_')
+            return self.view.__name__.lower()
 
     @property
     def path(self):
@@ -116,7 +116,7 @@ class ViewAnalyzer(object):
                     for n, q in fs.get_filters().items():
                         field = q.field_name.replace('__', '.')
                         lookup = f'${q.lookup_expr}'.replace('exact', 'eq').replace('contains', 'regex')
-                        params = {'data_key': repr(field), 'required': q.field.required}
+                        params = {'data_key': repr(field), 'required': q.field.required, 'params': {}}
                         params.update(self.get_validator(q.field))
                         field_type = FIELD_MAP.get(q.field.__class__.__name__, FIELD_MAP['default'])
                         filters.append({'q': n, 'lookup_field': field, 'params': params, 'field_type': field_type})
@@ -127,6 +127,7 @@ class ViewAnalyzer(object):
                             'lookup_field': None,
                             'validate': {'validate': 'validate.OneOf({})'.format(repr(self.view.ordering_fields))},
                             'field_type': 'Str',
+                            'params': {}
                         })
         return filters
 
@@ -137,7 +138,11 @@ class ViewAnalyzer(object):
 
     @cached_property
     def request(self):
-        return Request(HttpRequest())
+        r = HttpRequest()
+        r.META['SERVER_NAME'] = 'localhost'
+        r.META['SERVER_HOST'] = 'localhost'
+        r.META['SERVER_PORT'] = 8000
+        return Request(r)
 
     @cached_property
     def view_obj(self):
@@ -174,7 +179,8 @@ class ViewAnalyzer(object):
             field = self.queryset.model._meta.pk
         return {
             'lookup_field': self.view.lookup_field,
-            'field_type': FIELD_MAP.get(field.formfield().__class__.__name__, FIELD_MAP['default'])
+            'field_type': FIELD_MAP.get(field.formfield().__class__.__name__, FIELD_MAP['default']),
+            'params': {},
         }
 
     def get_pagination(self):
@@ -187,6 +193,7 @@ class ViewAnalyzer(object):
             return {
                 'q': 'page',
                 'field_type': 'Int',
+                'params': {},
             }
         return {}
 
@@ -210,7 +217,7 @@ class ViewAnalyzer(object):
                 'ordering': self.ordering,
                 'type': method,
                 'params': self.get_params(),
-                'filers': self.get_filters(),
+                'filters': self.get_filters(),
                 'path': self.path,
             }
             if method == 'list':
